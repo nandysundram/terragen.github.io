@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Terraform Tools UI</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #2c3e50;
+      max-width: 960px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }
+    .section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    /* Glow for dropzone */
+    .section.drop-zone {
+      animation: pulseGlow 2s infinite;
+      border: 2px dashed transparent;
+      transition: border 0.3s;
+    }
+    .section.drop-zone.dragover {
+      border-color: #1a73e8;
+      animation: none;
+    }
+    @keyframes pulseGlow {
+      0%   { box-shadow: 0 0 0 0 rgba(26, 115, 232, 0.4); }
+      70%  { box-shadow: 0 0 0 10px rgba(26, 115, 232, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(26, 115, 232, 0); }
+    }
+
+    h2 {
+      color: #1a73e8;
+      margin-top: 0;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    textarea {
+      width: 100%;
+      height: 140px;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 12px;
+      resize: vertical;
+    }
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+    button:hover {
+      background-color: #155ab6;
+    }
+    .output {
+      background-color: #f9fbff;
+      border-left: 4px solid #1a73e8;
+      padding: 12px;
+      margin-top: 15px;
+      min-height: 30px;
+      white-space: pre-wrap;
+      border-radius: 6px;
+    }
+    .loading {
+      opacity: 0.8;
+    }
+    .error {
+      color: #d32f2f;
+    }
+    .spinner {
+      border: 4px solid #e3e3e3;
+      border-top: 4px solid #1a73e8;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      animation: spin 1s linear infinite;
+      margin: 10px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Hidden file inputs for first two sections */
+    #genSection input[type="file"],
+    #checkSection input[type="file"] {
+      display: none;
+    }
+
+    /* Image preview */
+    .preview {
+      max-width: 100%;
+      max-height: 300px;
+      margin-top: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    /* File input for Image-to-Terraform section (visible) */
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      margin-top: 8px;
+      margin-bottom: 10px;
+    }
+    .file-input-wrapper input[type="file"] {
+      font-size: 100px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .file-btn {
+      background-color: #1a73e8;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-block;
+      font-weight: 500;
+    }
+    .file-btn:hover {
+      background-color: #155ab6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Terraform Tools UI</h1>
+
+  <!-- Section 1: Terraform Generator -->
+  <div class="section drop-zone" id="genSection">
+    <h2>🛠️ Generate Terraform</h2>
+    <label for="genInput">Description Input:</label>
+    <textarea id="genInput">Enter your input</textarea>
+    <button id="btnGen">Run Generate</button>
+    <div id="genOutput" class="output"></div>
+    <img id="genPreview" class="preview" alt="Uploaded preview"/>
+  </div>
+
+  <!-- Section 2: Terraform Compliance Checker -->
+  <div class="section drop-zone" id="checkSection">
+    <h2>🔍 Check Compliance</h2>
+    <label for="checkInput">Terraform HCL Input:</label>
+    <textarea id="checkInput"> Enter your input
+</textarea>
+    <button id="btnCheck">Run Compliance</button>
+    <div id="checkOutput" class="output"></div>
+    <img id="checkPreview" class="preview" alt="Uploaded preview"/>
+  </div>
+
+  <!-- Section 3: Image to Terraform -->
+  <div class="section drop-zone" id="imageSection">
+    <h2>🖼️ Image to Terraform Generator</h2>
+    <label for="checkImagein">Image Context Input:</label>
+    <textarea id="checkImagein"></textarea>
+
+    <!-- Visible file input for this section -->
+    <label>Upload Architecture Image:</label>
+    <div class="file-input-wrapper">
+      <span class="file-btn">Choose Image</span>
+      <input type="file" accept="image/*" id="imageInputOnly" />
+    </div>
+    
+    <button id="imageCheck">Generate Terraform Code</button>
+    <div id="checkImageOut" class="output"></div>
+    <img id="imagePreview" class="preview" alt="Uploaded preview"/>
+  </div>
+
+  <script>
+    const urlGen   = "https://2jpdo3bst2rvpzymhebdgvgnma0msplp.lambda-url.ap-southeast-1.on.aws/";
+    const urlCheck = "https://kfjskb3ttrvcclvb7rw4t3d2na0aebcl.lambda-url.ap-southeast-1.on.aws/";
+    const imgInput = "https://horyvmwuwwf4zfunvy7a3kggiu0mmvvn.lambda-url.ap-southeast-1.on.aws/";
+
+    /* ---------- drag-and-drop helpers ---------- */
+    function enableDropZone(section, preview) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt =>
+        section.addEventListener(evt, e => e.preventDefault())
+      );
+      ['dragenter', 'dragover'].forEach(evt =>
+        section.addEventListener(evt, () => section.classList.add('dragover'))
+      );
+      ['dragleave', 'drop'].forEach(evt =>
+        section.addEventListener(evt, () => section.classList.remove('dragover'))
+      );
+      section.addEventListener('drop', e => {
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+          renderPreview(file, preview);
+        }
+      });
+    }
+
+    function renderPreview(file, imgEl) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        imgEl.src = e.target.result;
+        imgEl.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* ---------- API caller ---------- */
+    async function callLambda(url, rawEl, outEl, imgEl) {
+      const raw = rawEl.value;
+      const out = document.getElementById(outEl);
+      out.innerHTML = '<div class="spinner"></div>';
+      out.classList.remove('error');
+      out.classList.add('loading');
+
+      const payload = {
+        version: "2.0",
+        routeKey: "POST /",
+        rawPath: "/",
+        rawQueryString: "",
+        headers: { "content-type": "text/plain" },
+        body: raw,
+        isBase64Encoded: false
+      };
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const text = await res.text();
+        let parsed = null;
+        try {
+          const obj = JSON.parse(text);
+          if (obj && obj.statusCode && obj.body) parsed = obj.body;
+        } catch (_) {}
+
+        out.textContent = parsed ?? text;
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}: ${text}`);
+      } catch (err) {
+        out.classList.add('error');
+        out.textContent = 'Error: ' + err.message;
+      } finally {
+        out.classList.remove('loading');
+      }
+    }
+
+    /* ---------- wire buttons ---------- */
+    document.getElementById('btnGen').onclick = () =>
+      callLambda(urlGen, document.getElementById('genInput'), 'genOutput', 'genPreview');
+
+    document.getElementById('btnCheck').onclick = () =>
+      callLambda(urlCheck, document.getElementById('checkInput'), 'checkOutput', 'checkPreview');
+
+    document.getElementById('imageCheck').onclick = () =>
+      callLambda(imgInput, document.getElementById('checkImagein'), 'checkImageOut', 'imagePreview');
+
+    /* ---------- attach drop zones ---------- */
+    enableDropZone(document.getElementById('genSection'),    document.getElementById('genPreview'));
+    enableDropZone(document.getElementById('checkSection'),  document.getElementById('checkPreview'));
+    enableDropZone(document.getElementById('imageSection'),  document.getElementById('imagePreview'));
+
+    /* ---------- manual file select for Image-to-Terraform ---------- */
+    document.getElementById('imageInputOnly').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) renderPreview(file, document.getElementById('imagePreview'));
+    });
+  </script>
+</body>
+</html>
