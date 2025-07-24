@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Terraform Tools UI</title>
+  <link rel="stylesheet" href="styles/main.css"/>
+  <script src="scripts/main.js" defer></script>
+</head>
+<body>
+  <h1>Terraform Tools UI</h1>
+
+  <!-- Section 1: Terraform Generator -->
+  <div class="section drop-zone" id="genSection">
+    <h2>🛠️ Generate Terraform</h2>
+    <label for="genInput">Description Input:</label>
+    <textarea id="genInput">Enter your input</textarea>
+    <button id="btnGen">Run Generate</button>
+    <div id="genOutput" class="output"></div>
+    <img id="genPreview" class="preview" alt="Uploaded preview"/>
+  </div>
+
+  <!-- Section 2: Terraform Compliance Checker -->
+  <div class="section drop-zone" id="checkSection">
+    <h2>🔍 Check Compliance</h2>
+    <label for="checkInput">Terraform HCL Input:</label>
+    <textarea id="checkInput"> Enter your input</textarea>
+    <button id="btnCheck">Run Compliance</button>
+    <div id="checkOutput" class="output"></div>
+    <img id="checkPreview" class="preview" alt="Uploaded preview"/>
+  </div>
+
+  <!-- Section 3: Image to Terraform -->
+  <div class="section drop-zone" id="imageSection">
+    <h2>🖼️ Image to Terraform Generator</h2>
+    <label for="checkImagein">Image Context Input:</label>
+    <textarea id="checkImagein"></textarea>
+
+    <!-- Visible file input for this section -->
+    <label>Upload Architecture Image:</label>
+    <div class="file-input-wrapper">
+      <span class="file-btn">Choose Image</span>
+      <input type="file" accept="image/*" id="imageInputOnly" />
+    </div>
+    
+    <button id="imageCheck">Generate Terraform Code</button>
+    <div id="checkImageOut" class="output"></div>
+    <img id="imagePreview" class="preview" alt="Uploaded preview"/>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 Terraform Tools. All rights reserved.</p>
+    <a href="login.html">Login</a>
+  </footer>
+</body>
+</html>
