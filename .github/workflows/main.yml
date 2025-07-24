@@ -3,11 +3,16 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # or your default branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    # ⬇️ Add these two lines
+    permissions:
+      contents: write          # lets GITHUB_TOKEN push to the repo
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
